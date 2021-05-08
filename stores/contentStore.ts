@@ -47,6 +47,7 @@ export default class ContentStore {
     });
   };
 
+  // CRUD operations
   loadContents = async () => {
     try {
       let contents = await agent.Contents.list();

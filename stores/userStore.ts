@@ -50,7 +50,7 @@ export default class UserStore {
     });
   };
 
-  //CRUD functions
+  //CRUD operations
   loadUsers = async () => {
     try {
       let users = await agent.Users.list();

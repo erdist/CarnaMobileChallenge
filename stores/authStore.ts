@@ -5,16 +5,22 @@ import uuid from "react-native-uuid";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default class AuthStore {
+
+  //Credentials
   jsonWebToken = "";
   email = "";
   username = "";
   adminId = "";
+
+  // Form object for Register
   registerForm: AuthAdmin = {
     email: "",
     password: "",
     admin: { id: "", firstName: "", surname: "", users: [], contents: [] },
     adminId: "",
   };
+
+  // Form object for collecting credentials from RegisterScreen
   registerScreenForm = {
     email: "",
     password: "",
@@ -22,9 +28,13 @@ export default class AuthStore {
     surname: "",
   };
 
+  // Form object for Login
   loginForm = { email: "", password: "" };
 
+  // Decides which Stack Navigator to load/unload. Either Login/register pages or HomeScreen.
   isLoggedIn = false;
+
+  // Response message for login function.
   message = "";
 
   constructor() {
@@ -32,7 +42,7 @@ export default class AuthStore {
   }
 
 
-  //Handle functions for updating login register forms.
+  //Handle functions for updating login and register forms.
   handleRegisterEmail = (e: any) => {
     runInAction(() => {
       this.registerScreenForm.email = e;
@@ -65,6 +75,8 @@ export default class AuthStore {
     });
   };
 
+
+  // Set functions for observables
   setIsLoggedIn = (value: boolean) => {
     this.isLoggedIn = value;
   };
@@ -87,7 +99,7 @@ export default class AuthStore {
     });
   };
 
-  //Basic AsyncStorage functions store, get,and remove
+  //Basic AsyncStorage functions eg. store, get,and remove
   storeData = async (value: string) => {
     try {
       await AsyncStorage.setItem("@storage_Key", value);
@@ -120,6 +132,7 @@ export default class AuthStore {
     console.log("Done. Key deleted from AsyncStorage.");
   };
 
+  // Register function with no response handling.
   register = async () => {
     try {
       let uid = uuid.v4().toString();
@@ -142,11 +155,12 @@ export default class AuthStore {
     }
   };
 
-  // JWT id deleted from storage.
+  // User will be logged out and JWT token will be deleted from storage.
   logout = () => {
     this.removeValue();
   };
 
+  // Login function with response handling in case of no user found and wrong password.
   login = async () => {
     try {
       let result: LoginResponse = await agent.Auth.login(this.loginForm);
@@ -171,7 +185,7 @@ export default class AuthStore {
     }
   };
 
-  //At app start, user is being autheticated with the jwt token in AysncStorage, if not, user is redirected to login/register page.
+  //At app start, user is being authenticated with the jwt token in AysncStorage, if not, user is redirected to login/register page.
   authenticate = async () => {
     try {
       runInAction(async () => {
@@ -184,12 +198,12 @@ export default class AuthStore {
           this.setAdminId(result.data.adminId);
           this.message = result.message;
           runInAction(() => {
-            //Redirect DrawerScreen
+            //Redirect to DrawerScreen
             this.isLoggedIn = true;
           });
         } else {
           runInAction(() => {
-            //Redirect RootStackScreen
+            //Redirect to RootStackScreen
             this.isLoggedIn = false;
           });
         }
